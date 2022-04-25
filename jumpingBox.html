@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+</head>
+<body onload="startGame()">
+<script> 
+
+function startGame() {
+  player = new component(50, 50, 'brown', 100, 0)
+
+  myGameArea.start();
+}
+
+var myGameArea = {
+  canvas : document.createElement("canvas"),
+  myGameArea: [],
+  frameCnt: 0,
+  start : function() {
+    this.canvas.width = 480;
+    this.canvas.height = 270;
+    this.context = this.canvas.getContext("2d");
+    this.timer = setInterval(this.update, 20);
+    document.body.insertBefore(this.canvas, document.getElementById("canvas"));
+    window.addEventListener("keydown", function(e) {
+      myGameArea.keys[e.key] = true;
+    })
+    window.addEventListener("keyup", function(e) {
+      myGameArea.keys[e.key] = false;
+    })
+  },
+  update : function() {
+    myGameArea.clear();
+  },
+  clear : function() {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+}
+
+function component(width, height, color, x, y) {
+  this.width = width;
+  this.height = height;
+  this.color = color;
+  this.x = x;
+  this.y = y;
+  this.vx = 0;
+  this.vy = 0;
+  this.ay = 2; //gravity
+  this.impulseCounter = 0;
+  
+  this.update = function() {
+    myGameArea.context.strokeStyle = color;
+    myGameArea.context.beginPath();
+    myGameArea.context.moveTo(this.x,this.y);
+    myGameArea.context.lineTo(this.x + this.width,this.y + this.height);
+    myGameArea.context.stroke();
+    myGameArea.context.endPath();
+    
+    // Gravity stuff
+    if (this.yImpulseCounter > 0) {
+      this.ay += 1;
+      this.yImpulseCounter -= 1;
+    }
+    if (this.y > 0) {
+      this.y = 0;
+      this.vy = -this.vy;
+      this.yImpulseCounter = 0;
+    }
+    this.x += this.vx;
+    this.y += this.vy;
+    //console.log(this.x + " " + this.y + " " + this.dx + " " + this.dy)
+  }
+
+  this.moveUp = function() {
+    this.ay -= 5;
+    this.yImpulseCounter = 5;
+  }
+  
+  this.moveDown = function() {
+    this.vy += 1;
+  }
+
+  this.moveLeft = function() {
+    this.vx -= 1;
+  }
+
+  this.moveRight = function() {
+    this.vx +=1;
+  }
+}
+
+</script>
+</body>
+</html>
+
+<!-- game, game world, interactions between programs -->

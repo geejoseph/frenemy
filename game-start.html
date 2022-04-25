@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+</head>
+<body onload="startGame()">
+<script> 
+var p1, p2, p3;
+var gamePieces = [p1, p2, p3];
+
+function startGame() {
+  gamePieces[0] = new component(50, 50, 'red', 50, 0, 1, 0);
+  gamePieces[1] = new component(50, 50, 'blue', 25, 0, 2, 0);
+  gamePieces[2] = new component(50, 50, 'green', 0, 0, 3, 0);
+
+  myGameArea.start();
+}
+
+var myGameArea = {
+  canvas : document.createElement("canvas"),
+  myGameArea: [],
+  start : function() {
+    this.canvas.width = 480;
+    this.canvas.height = 270;
+    this.context = this.canvas.getContext("2d");
+    this.timer = setInterval(this.update, 20);
+    document.body.insertBefore(this.canvas, document.getElementById("canvas"));
+    window.addEventListener("keydown", function(e) {
+      myGameArea.keys[e.key] = true;
+    })
+  },
+  update : function() {
+    myGameArea.clear();
+    //for (piece in gamePieces) {
+    //  piece.update();
+    //}
+    for (let i = 0; i < gamePieces.length; i++) {
+      gamePieces[i].update();
+    }
+  },
+  clear : function() {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.beginPath();
+  }
+}
+
+function component(width, height, color, x, y, dx, dy) {
+  this.width = width;
+  this.height = height;
+  this.color = color;
+  this.x = x;
+  this.y = y;
+  this.dx = dx;
+  this.dy = dy;
+  
+  this.update = function() {
+    myGameArea.context.strokeStyle = color;
+    myGameArea.context.moveTo(this.x,this.y);
+    myGameArea.context.lineTo(this.x + this.width,this.y + this.height);
+    myGameArea.context.stroke();
+    this.x += this.dx;
+    this.y += this.dy;
+    //console.log(this.x + " " + this.y + " " + this.dx + " " + this.dy)
+  }
+
+  this.moveUp = function() {
+    this.dy -= 1;
+  }
+  
+  this.moveDown = function() {
+    this.dy += 1;
+  }
+
+  this.moveLeft = function() {
+    this.dx -= 1;
+  }
+
+  this.moveRight = function() {
+    this.dx +=1;
+  }
+}
+
+</script>
+</body>
+</html>
+
+<!-- game, game world, interactions between programs -->
