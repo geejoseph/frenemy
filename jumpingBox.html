@@ -11,6 +11,11 @@ function startGame() {
   myGameArea.start();
 }
 
+var UP = 38;
+var DOWN = 40;
+var LEFT = 37;
+var RIGHT = 39;
+
 var myGameArea = {
   canvas : document.createElement("canvas"),
   myGameArea: [],
@@ -21,6 +26,7 @@ var myGameArea = {
     this.context = this.canvas.getContext("2d");
     this.timer = setInterval(this.update, 20);
     document.body.insertBefore(this.canvas, document.getElementById("canvas"));
+    this.keys = new Array(222);
     window.addEventListener("keydown", function(e) {
       myGameArea.keys[e.key] = true;
     })
@@ -30,6 +36,11 @@ var myGameArea = {
   },
   update : function() {
     myGameArea.clear();
+    if (myGameArea.keys[UP]) moveUp();
+    if (myGameArea.keys[DOWN]) moveDown();
+    if (myGameArea.keys[LEFT]) moveLeft();
+    if (myGameArea.keys[RIGHT]) moveRight();
+    this.frameCnt++;
   },
   clear : function() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -44,8 +55,7 @@ function component(width, height, color, x, y) {
   this.y = y;
   this.vx = 0;
   this.vy = 0;
-  this.ay = 2; //gravity
-  this.impulseCounter = 0;
+  this.gy = 2; //gravity
   
   this.update = function() {
     myGameArea.context.strokeStyle = color;
@@ -55,16 +65,28 @@ function component(width, height, color, x, y) {
     myGameArea.context.stroke();
     myGameArea.context.endPath();
     
-    // Gravity stuff
-    if (this.yImpulseCounter > 0) {
-      this.ay += 1;
-      this.yImpulseCounter -= 1;
+    // Decrease acceleration
+    if (this.ax > 0) {
+      this.ax--;
+    } else if (this.ax < 0) {
+      this.ax++;
     }
-    if (this.y > 0) {
+    if (this.ay > 0) {
+      this.ay--;
+    } else if (this.ay < 0) {
+      this.ay++;
+    }
+    
+    // Add dts?
+    if (this.y >= 0) { // hit the ground, so bounce
       this.y = 0;
       this.vy = -this.vy;
-      this.yImpulseCounter = 0;
+      this.ay = 0;
+    } else {
+      this.vy += this.gy; // in air, so gravity
     }
+    this.vx += this.ax;
+    this.vy += this.ay;
     this.x += this.vx;
     this.y += this.vy;
     //console.log(this.x + " " + this.y + " " + this.dx + " " + this.dy)
@@ -72,19 +94,18 @@ function component(width, height, color, x, y) {
 
   this.moveUp = function() {
     this.ay -= 5;
-    this.yImpulseCounter = 5;
   }
   
   this.moveDown = function() {
-    this.vy += 1;
+    this.ay += 5;
   }
 
   this.moveLeft = function() {
-    this.vx -= 1;
+    this.ax -= 5;
   }
 
   this.moveRight = function() {
-    this.vx +=1;
+    this.ax += 5;
   }
 }
 
