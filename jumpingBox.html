@@ -43,6 +43,7 @@ var myGameArea = {
     if (myGameArea.keys[LEFT]) player.moveLeft();
     if (myGameArea.keys[RIGHT]) player.moveRight();
     this.frameCnt++;
+    // Try one every 20 frames
   },
   clear : function() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -84,14 +85,15 @@ function component(width, height, color, x, y) {
     // Add dts?
 
     // Gravity
-    if (this.y > 0) { // hit the ground, so bounce
-      this.y = 0;
+    // Should be height of component instead of 0?
+    if (this.y + this.height < myGameArea.height) { // hit the ground, so bounce
+      this.y = myGameArea.height;
       this.vy = -dampen*this.vy; // keep in integers?
       if (this.vy < settle) {
         this.vy = 0;
       }
       this.ay = 0;
-    } else if (this.y < 0) {
+    } else if (this.y < myGameArea.height) {
       this.vy += gy; // in air, so gravity
     }
 
